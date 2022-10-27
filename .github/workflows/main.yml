@@ -103,7 +103,7 @@ jobs:
         id: change-log
 
       - name: Create a GitHub release
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         if: needs.setup.outputs.tag-exist != 'true' && needs.setup.outputs.is-pre-verion != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
