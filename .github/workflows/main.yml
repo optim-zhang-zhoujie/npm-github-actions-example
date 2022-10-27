@@ -28,11 +28,11 @@ jobs:
 
       - name: set package version
         id: package-version
-        run: node -p -e '`"{version}={${require("./package.json").version}}" >> $GITHUB_OUTPUT`'
+        run: node -p -e '`"{version}=${require("./package.json").version}" >> $GITHUB_OUTPUT`'
 
       - name: check pre-release
         id: pre-version
-        run: node -p -e '`"{pre-version}={${require("./package.json").version.includes("-")}}" >> $GITHUB_OUTPUT`'
+        run: node -p -e '`"{pre-version}=${require("./package.json").version.includes("-")}" >> $GITHUB_OUTPUT`'
 
       - name: check tag exists
         uses: mukunku/tag-exists-action@v1.0.0
