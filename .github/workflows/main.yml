@@ -69,10 +69,8 @@ jobs:
 
       - name: Install
         run: |
+          npm i -g pnpm
           pnpm install
-
-      - name: Build
-        run: npm run build
 
       - name: Publish
         run: |
