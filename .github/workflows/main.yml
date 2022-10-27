@@ -9,7 +9,7 @@ on:
 
 jobs:
   setup:
-    name: setup
+    name: Setup
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.package-version.outputs.version }}
@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
-    name: publish
+    name: Publish
     needs: setup
     runs-on: ubuntu-latest
     if: needs.setup.outputs.tag-exist != 'true'
@@ -67,13 +67,12 @@ jobs:
             ${{ runner.os }}-node-
             ${{ runner.os }}-
 
-      # - name: Install
-      #   run: npm ci
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # - name: Build
-      #   run: npm run build
-      # まだpublishされていないバージョンならpublishする
+      - name: Install
+        run: |
+          pnpm install
+
+      - name: Build
+        run: npm run build
 
       - name: Publish
         run: |
