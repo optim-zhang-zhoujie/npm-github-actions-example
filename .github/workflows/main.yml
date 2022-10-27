@@ -35,7 +35,7 @@ jobs:
         run: node -p -e '`is-pre-version=${require("./package.json").version.includes("-pre")}`' >> $GITHUB_OUTPUT
 
       - name: Check tag exists
-        uses: uruz-7/tag-exists-action@v2.1.0
+        uses: uruz-7/tag-exists-action@v2
         id: tag-exist
         with:
           tag: v${{ steps.package-version.outputs.version }}
