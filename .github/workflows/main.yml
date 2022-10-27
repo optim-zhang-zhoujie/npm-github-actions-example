@@ -12,7 +12,9 @@ jobs:
     name: setup
     runs-on: ubuntu-latest
     outputs:
+      version: $PACKAGE_VERSION
       tag-name: v$PACKAGE_VERSION
+      is-pre-verion: $IS_PRE_VERSION
       tag-exist: ${{ steps.tag-exist.outputs.exists }}
     steps:
       - name: checkout
@@ -83,7 +85,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           github_repo: ${{ github.repository }}
-          version: $PACKAGE_VERSION
+          version: ${{ needs.setup.outputs.version }}
           git_commit_sha: ${{ github.sha }}
           git_tag_prefix: "v"
 
@@ -107,10 +109,10 @@ jobs:
 
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
-        if: needs.setup.outputs.tag-exist != 'true' && ${$IS_PRE_VERSION} != 'true'
+        if: needs.setup.outputs.tag-exist != 'true' && needs.setup.outputs.is-pre-verion != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: needs.setup.outputs.tag-name
-          release_name: Release needs.setup.outputs.tag-name
+          tag_name: ${{ needs.setup.outputs.tag-name }}
+          release_name: Release ${{ needs.setup.outputs.tag-name }}
           body: ${{ steps.change-log.outputs.changelog }}
