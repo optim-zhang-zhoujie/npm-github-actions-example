@@ -12,9 +12,9 @@ jobs:
     name: setup
     runs-on: ubuntu-latest
     outputs:
-      version: $PACKAGE_VERSION
-      tag-name: v$PACKAGE_VERSION
-      is-pre-verion: $IS_PRE_VERSION
+      version: ${{ PACKAGE_VERSION }}
+      tag-name: v${{ PACKAGE_VERSION }}
+      is-pre-version: ${{ IS_PRE_VERSION }}
       tag-exist: ${{ steps.tag-exist.outputs.exists }}
     steps:
       - name: checkout
