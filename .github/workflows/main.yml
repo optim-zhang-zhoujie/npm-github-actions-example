@@ -18,11 +18,11 @@ jobs:
       tag-exist: ${{ steps.tag-exist.outputs.exists }}
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: "14"
           registry-url: "https://npm.pkg.github.com"
       - name: set package version
         id: package-version
@@ -33,7 +33,7 @@ jobs:
       - name: check tag exists
         uses: mukunku/tag-exists-action@v1.0.0
         id: check-tag
-        with: 
+        with:
           tag: ${{ steps.package-version.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -44,14 +44,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14.x
           registry-url: "https://npm.pkg.github.com"
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
@@ -86,9 +86,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
       - name: setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 14.x
           registry-url: "https://npm.pkg.github.com"
@@ -96,8 +96,8 @@ jobs:
         uses: scottbrenner/generate-changelog-action@master
         id: change-log
       - name: Create a GitHub release
-        uses: actions/create-release@v1
-        if:  needs.setup.outputs.tag-exist != 'true' && needs.setup.outputs.is-pre-verion != 'true'
+        uses: softprops/action-gh-release@v1
+        if: needs.setup.outputs.tag-exist != 'true' && needs.setup.outputs.is-pre-verion != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
