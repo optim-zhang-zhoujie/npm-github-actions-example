@@ -11,6 +11,9 @@ jobs:
   setup:
     name: setup
     runs-on: ubuntu-latest
+    outputs:
+      tag-name: v$PACKAGE_VERSION
+      tag-exist: ${{ steps.tag-exist.outputs.exists }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -104,10 +107,10 @@ jobs:
 
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
-        if: needs.setup.outputs.tag-exist != 'true' && needs.setup.outputs.is-pre-verion != 'true'
+        if: needs.setup.outputs.tag-exist != 'true' && ${$IS_PRE_VERSION} != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v$PACKAGE_VERSION
-          release_name: Release v$PACKAGE_VERSION
+          tag_name: needs.setup.outputs.tag-name
+          release_name: Release needs.setup.outputs.tag-name
           body: ${{ steps.change-log.outputs.changelog }}
