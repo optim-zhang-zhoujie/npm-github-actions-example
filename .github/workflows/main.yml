@@ -11,11 +11,6 @@ jobs:
   setup:
     name: setup
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.package-version.outputs.version }}
-      tag-name: v${{ steps.package-version.outputs.version }}
-      is-pre-verion: ${{ steps.pre-version.outputs.pre-version }}
-      tag-exist: ${{ steps.tag-exist.outputs.exists }}
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -28,17 +23,17 @@ jobs:
 
       - name: set package version
         id: package-version
-        run: node -p -e '`::set-output name=version::${require("./package.json").version}`'
+        run: node -p -e '`"{version}={${require("./package.json").version}}" >> $PACKAGE_VERSION`'
 
       - name: check pre-release
         id: pre-version
-        run: node -p -e '`::set-output name=pre-version::${require("./package.json").version.includes("-")}`'
+        run: node -p -e '`"{pre-version}={${require("./package.json").version.includes("-")}}" >> $IS_PRE_VERSION`'
 
       - name: check tag exists
         uses: mukunku/tag-exists-action@v1.0.0
         id: check-tag
         with:
-          tag: ${{ steps.package-version.outputs.version }}
+          tag: $PACKAGE_VERSION
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -85,7 +80,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           github_repo: ${{ github.repository }}
-          version: ${{ needs.setup.outputs.version }}
+          version: $PACKAGE_VERSION
           git_commit_sha: ${{ github.sha }}
           git_tag_prefix: "v"
 
@@ -113,6 +108,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ needs.setup.outputs.tag-name }}
-          release_name: Release ${{ needs.setup.outputs.tag-name }}
+          tag_name: v$PACKAGE_VERSION
+          release_name: Release v$PACKAGE_VERSION
           body: ${{ steps.change-log.outputs.changelog }}
