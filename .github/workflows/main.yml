@@ -17,24 +17,24 @@ jobs:
       is-pre-version: ${{ steps.pre-version.outputs.is-pre-version }}
       tag-exist: ${{ steps.tag-exist.outputs.exists }}
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: setup Node
+      - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: 16
           registry-url: "https://npm.pkg.github.com"
 
-      - name: set package version
+      - name: Set package version
         id: package-version
         run: node -p -e '`version=${require("./package.json").version}`' >> $GITHUB_OUTPUT
 
-      - name: check pre-release
+      - name: Check pre-release
         id: pre-version
         run: node -p -e '`is-pre-version=${require("./package.json").version.includes("-pre")}`' >> $GITHUB_OUTPUT
 
-      - name: check tag exists
+      - name: Check tag exists
         uses: mukunku/tag-exists-action@v1.0.0
         id: tag-exist
         with:
@@ -48,10 +48,10 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.setup.outputs.tag-exist != 'true'
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: setup Node
+      - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: 16
@@ -67,28 +67,26 @@ jobs:
             ${{ runner.os }}-node-
             ${{ runner.os }}-
 
-      # - name: install
+      # - name: Install
       #   run: npm ci
       #   env:
       #     NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # - name: build
+      # - name: Build
       #   run: npm run build
       # まだpublishされていないバージョンならpublishする
 
-      - name: publish
+      - name: Publish
         run: |
           npx can-npm-publish --verbose && npm publish || echo "Does not publish"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: package-version-to-git-tag
-        uses: pkgdeps/git-tag-action@v2
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          github_repo: ${{ github.repository }}
-          version: ${{ needs.setup.outputs.version }}
-          git_commit_sha: ${{ github.sha }}
-          git_tag_prefix: "v"
+          custom_tag: ${{ needs.setup.outputs.version }}
 
   release-note:
     name: release note
@@ -96,16 +94,16 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.setup.outputs.tag-exist != 'true'
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: setup Node
+      - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: 16
           registry-url: "https://npm.pkg.github.com"
 
-      - name: set change log
+      - name: Set change log
         uses: scottbrenner/generate-changelog-action@master
         id: change-log
 
