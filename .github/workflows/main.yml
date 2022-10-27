@@ -36,7 +36,7 @@ jobs:
 
       - name: check tag exists
         uses: mukunku/tag-exists-action@v1.0.0
-        id: check-tag
+        id: tag-exist
         with:
           tag: v${{ steps.package-version.outputs.version }}
         env:
@@ -46,6 +46,7 @@ jobs:
     name: publish
     needs: setup
     runs-on: ubuntu-latest
+    if: needs.setup.outputs.tag-exist != 'true'
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -93,6 +94,7 @@ jobs:
     name: release note
     needs: [setup, publish]
     runs-on: ubuntu-latest
+    if: needs.setup.outputs.tag-exist != 'true'
     steps:
       - name: checkout
         uses: actions/checkout@v3
