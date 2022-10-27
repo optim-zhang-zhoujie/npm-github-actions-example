@@ -38,7 +38,7 @@ jobs:
         uses: mukunku/tag-exists-action@v1.0.0
         id: check-tag
         with:
-          tag: $PACKAGE_VERSION
+          tag: v$PACKAGE_VERSION
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -109,8 +109,9 @@ jobs:
 
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
-        if: needs.setup.outputs.tag-exist != 'true' && needs.setup.outputs.is-pre-verion != 'true'
+        if: needs.setup.outputs.tag-exist != 'true'
         with:
           tag: ${{ needs.setup.outputs.tag-name }}
           name: Release ${{ needs.setup.outputs.tag-name }}
           body: ${{ steps.change-log.outputs.changelog }}
+          prerelease: ${{ needs.setup.outputs.is-pre-version }}
