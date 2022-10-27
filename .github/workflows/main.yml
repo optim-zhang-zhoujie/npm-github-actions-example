@@ -110,9 +110,7 @@ jobs:
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
         if: needs.setup.outputs.tag-exist != 'true' && needs.setup.outputs.is-pre-verion != 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ needs.setup.outputs.tag-name }}
-          release_name: Release ${{ needs.setup.outputs.tag-name }}
+          tag: ${{ needs.setup.outputs.tag-name }}
+          name: Release ${{ needs.setup.outputs.tag-name }}
           body: ${{ steps.change-log.outputs.changelog }}
