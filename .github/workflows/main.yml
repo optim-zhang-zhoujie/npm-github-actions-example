@@ -19,17 +19,21 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+
       - name: setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          node-version: 16
           registry-url: "https://npm.pkg.github.com"
+
       - name: set package version
         id: package-version
         run: node -p -e '`::set-output name=version::${require("./package.json").version}`'
+
       - name: check pre-release
         id: pre-version
         run: node -p -e '`::set-output name=pre-version::${require("./package.json").version.includes("-")}`'
+
       - name: check tag exists
         uses: mukunku/tag-exists-action@v1.0.0
         id: check-tag
@@ -45,11 +49,13 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+
       - name: setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16
           registry-url: "https://npm.pkg.github.com"
+
       - name: Cache node modules
         uses: actions/cache@v3
         with:
@@ -59,6 +65,7 @@ jobs:
             ${{ runner.os }}-node-modules-
             ${{ runner.os }}-node-
             ${{ runner.os }}-
+
       # - name: install
       #   run: npm ci
       #   env:
@@ -66,11 +73,13 @@ jobs:
       # - name: build
       #   run: npm run build
       # まだpublishされていないバージョンならpublishする
+
       - name: publish
         run: |
           npx can-npm-publish --verbose && npm publish || echo "Does not publish"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: package-version-to-git-tag
         uses: pkgdeps/git-tag-action@v2
         with:
@@ -87,14 +96,17 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3
+
       - name: setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16
           registry-url: "https://npm.pkg.github.com"
+
       - name: set change log
         uses: scottbrenner/generate-changelog-action@master
         id: change-log
+
       - name: Create a GitHub release
         uses: softprops/action-gh-release@v1
         if: needs.setup.outputs.tag-exist != 'true' && needs.setup.outputs.is-pre-verion != 'true'
