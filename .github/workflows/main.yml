@@ -88,30 +88,10 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           custom_tag: ${{ needs.setup.outputs.version }}
 
-  release-note:
-    name: release note
-    needs: [setup, publish]
-    runs-on: ubuntu-latest
-    if: needs.setup.outputs.tag-exist != 'true'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          registry-url: "https://npm.pkg.github.com"
-
-      - name: Set change log
-        uses: scottbrenner/generate-changelog-action@master
-        id: change-log
-
       - name: Create a GitHub release
         uses: ncipollo/release-action@v1
-        if: needs.setup.outputs.tag-exist != 'true'
         with:
           tag: ${{ needs.setup.outputs.tag-name }}
           name: Release ${{ needs.setup.outputs.tag-name }}
-          body: ${{ steps.change-log.outputs.changelog }}
+          body: ${{ steps.tag_version.outputs.changelog }}
           prerelease: ${{ needs.setup.outputs.is-pre-version }}
